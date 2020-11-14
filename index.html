@@ -1,14 +1,40 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Hello World!</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-</head>
-<body>
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-</body>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
+    <link rel="stylesheet" href="index.css" />
+    <script defer src="render.js"></script>
+  </head>
+  <body class="content">
+    <h1>Samsung remover apps</h1>
+
+    <h2>Instruction</h2>
+    <p>bla bla bla</p>
+
+    <h2>My IP: <span id="my-ip"></span></h2>
+
+    <h2>TV <button id="search-tv" class="button is-primary">Search TV</button></h2>
+
+    <div>
+      <p>
+        <span>Model: </span><span id="model"></span><br />
+        <span>Name: </span><span id="name"></span><br />
+        <span>IP: </span><span id="ip"></span><br />
+        <span>Mac: </span><span id="mac"></span>
+      </p>
+    </div>
+
+    <h2>Apps</h2>
+    <button id="get-apps" class="button is-warning">Get apps</button>
+
+    <div>
+      <select id="options"></select>
+    </div>
+
+    <div id="selected"></div>
+
+    <button id="remove-app" class="button is-warning">Remove app</button>
+  </body>
 </html>

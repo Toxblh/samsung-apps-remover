@@ -3,11 +3,31 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
+  "build": {
+		"appId": "com.toxblh.samsung-apps-remover",
+		"productName": "Samsung Apps Remover",
+		"mac": {
+			"category": "public.app-category.entertainment"
+		},
+		"dmg": {
+			"icon": false
+		},
+		"linux": {
+			"target": ["AppImage"],
+			"category": "Utility"
+		}
+	},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "postinstall": "electron-builder install-app-deps",
+		"build": "electron-builder --mac --windows --linux",
+		"release": "electron-builder --mac --windows --linux --publish always",
+    "patch": "npm version patch && git push --follow-tags",
+    "minor": "npm version minor && git push --follow-tags",
+    "major": "npm version major && git push --follow-tags"
   },
   "repository": {
     "type": "git",
@@ -26,10 +46,13 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^10.1.5"
+    "electron": "^10.1.5",
+    "electron-builder": "^22.9.1"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "macfromip": "^1.1.1",
+    "samsung-tv-control": "^1.11.1"
   },
   "config": {
     "forge": {
