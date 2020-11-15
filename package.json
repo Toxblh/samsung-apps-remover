@@ -1,7 +1,7 @@
 {
   "name": "samsung-apps-remover",
   "version": "1.0.1",
-  "description": "",
+  "description": "Samsung apps remover application",
   "main": "main.js",
   "build": {
     "appId": "com.toxblh.samsung-apps-remover",
@@ -25,6 +25,7 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "postinstall": "electron-builder install-app-deps",
+    "build-current": "electron-builder -w portable -lm",
     "build": "electron-builder --mac --windows --linux",
     "release": "electron-builder --mac --windows --linux --publish always",
     "patch": "npm version patch && git push --follow-tags",

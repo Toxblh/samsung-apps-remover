@@ -1,6 +1,6 @@
 const { Samsung, AutoSearch } = require('samsung-tv-control')
-const { sep } = require('path');
-const path = require('path');
+const { sep } = require('path')
+const { exec } = require('child_process')
 const { networkInterfaces } = require('os')
 const { getMac } = require('macfromip')
 
@@ -12,21 +12,26 @@ let selectedToDel = {}
 let control
 
 const configTV = {
-  // debug: true, // Default: false
   nameApp: 'Samsung Apps Remover', // Default: NodeJS
 }
 
-const getTVMacByIP = (ip) => new Promise((resolve, reject) => {
-  getMac(ip, (err, data) => {
-    if (err) {
-      reject(err);
-      return;
-    }
-    // fix the mac address so that every number consists of 2 bytes
-    const mac = data.trim().split(':').map(n => n.length < 2 ? `0${n}` : `${n}`).join('').toUpperCase();
-    resolve(mac);
-  });
-});
+const getTVMacByIP = (ip) =>
+  new Promise((resolve, reject) => {
+    getMac(ip, (err, data) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      // fix the mac address so that every number consists of 2 bytes
+      const mac = data
+        .trim()
+        .split(':')
+        .map((n) => (n.length < 2 ? `0${n}` : `${n}`))
+        .join('')
+        .toUpperCase()
+      resolve(mac)
+    })
+  })
 
 function getMyLocalIp() {
   for (const name of Object.keys(nets)) {
@@ -43,6 +48,10 @@ function getMyLocalIp() {
 
 getMyLocalIp()
 
+const appFolder = __dirname
+const sdbFolder = process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
+const sdbApp = process.platform == 'win32' ? 'sdb.exe' : 'sdb'
+const sdbPath = `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
 
 const select = document.getElementById('options')
 const selected = document.getElementById('selected')
@@ -66,7 +75,6 @@ async function searchTV() {
     document.getElementById('ip').innerHTML = configTV.ip
     document.getElementById('mac').innerHTML = configTV.mac
 
-
     console.log(configTV)
     control = new Samsung(configTV)
   }
@@ -76,7 +84,7 @@ async function searchTV() {
 }
 
 select.addEventListener('change', (e) => {
-  selectedToDel = apps.filter(app => app.appId === e.target.value)[0]
+  selectedToDel = apps.filter((app) => app.appId === e.target.value)[0]
   selected.innerHTML = `<b>${selectedToDel.name}</b> [${selectedToDel.appId}]`
   console.log('selectedToDel', selectedToDel)
 })
@@ -86,7 +94,6 @@ searchBtn.onclick = () => {
   searchBtn.classList.add('is-danger')
   searchBtn.innerText = 'Searching'
 }
-
 
 getAppsBtn.onclick = async () => {
   getAppsStatus.innerText = 'Please look to TV and confirm remote control for get list of applications'
@@ -101,7 +108,6 @@ getAppsBtn.onclick = async () => {
 
   console.log('# Response getAppsFromTV', apps)
 
-
   getAppsStatus.innerText = 'Choose to which application will delete'
 
   apps.forEach((app) => {
@@ -113,13 +119,44 @@ getAppsBtn.onclick = async () => {
   })
 }
 
-removeAppBtn.onclick = () => {
-  //is-warning
-  removeStatus.innerHTML = `Will remove app ${selectedToDel.name}`
-  const extensionRootPath = path.resolve(__dirname, '..');
-  const sdbFolder = (process.platform == 'win32') ? 'win' : (process.platform == 'linux') ? 'linux' : 'mac';
-  const sdbToolname = (process.platform == 'win32') ? 'sdb.exe' : 'sdb';
-  const sdbExec = `${extensionRootPath}/sdb/${sdbFolder}/${sdbToolname}`.split('/').join(sep);
+removeAppBtn.onclick = async () => {
+  try {
+    removeStatus.innerHTML = `Will remove app ${selectedToDel.name}`
 
-  console.log(sdbExec);
+    await connectToTV()
+    await uninstallApp(selectedToDel.appId)
+
+    removeStatus.innerHTML = `${selectedToDel.name} Removed!`
+  } catch (err) {
+    console.log('Error: ', err)
+  }
+}
+
+function execAsync(cmd, outCheck) {
+  return new Promise(function (resolve, reject) {
+    console.log(`App Launcher: ${cmd}`)
+    exec(cmd, (err, stdout, stderr) => {
+      if (err) {
+        reject(`${err.name}: ${err.message}`)
+      } else {
+        if (outCheck) {
+          outCheck(stdout, resolve, reject)
+        } else {
+          resolve()
+        }
+      }
+    })
+  })
+}
+
+function uninstallApp(appId) {
+  return execAsync(`${sdbPath} -s ${configTV.ip}:26101 shell 0 vd_appuninstall ${appId}`)
+}
+
+function connectToTV() {
+  return execAsync(`${sdbPath} connect ${configTV.ip}:26101`)
+}
+
+function disconnectTarget() {
+  return execAsync(`${sdbPath} disconnect ${configTV.ip}:26101`)
 }
