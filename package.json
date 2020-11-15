@@ -30,9 +30,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "postinstall": "electron-builder install-app-deps",
-    "build-current": "electron-builder -w portable -lm",
-    "build": "electron-builder --mac --windows --linux",
-    "release": "electron-builder --mac --windows --linux --publish always",
+    "build": "electron-builder",
+    "release": "electron-builder --publish always",
     "patch": "npm version patch && git push --follow-tags",
     "minor": "npm version minor && git push --follow-tags",
     "major": "npm version major && git push --follow-tags"
