@@ -3,51 +3,90 @@
   <head>
     <meta charset="UTF-8" />
     <title>Samsung apps remover</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
+    <link rel="stylesheet" href="bulma.css" />
     <link rel="stylesheet" href="index.css" />
-    <script defer src="render.js"></script>
+    <script defer src="tv.js"></script>
+    <script defer src="fontawesome.js"></script>
   </head>
   <body class="content">
-    <h1>Samsung apps remover</h1>
-
-    <h2>Instruction</h2>
-    <pre>
-      bla bla bla
-      Turn on your TV wait 2-3 seconds and start to search,
-      if nothing found - try again.
-
-    </pre>
-
-    <h2>My IP: <span id="my-ip"></span></h2>
-
-    <h2>TV <button id="search-tv" class="button is-primary">Search TV</button></h2>
-
-    <div>
-      <pre>
-        <span>Model: </span><span id="model"></span><br />
-        <span>Name: </span><span id="name"></span><br />
-        <span>IP: </span><span id="ip"></span><br />
-        <span>Mac: </span><span id="mac"></span>
-      </pre>
+    <div class="wrap-collabsible">
+      <input id="collapsible" class="toggle" type="checkbox" />
+      <label for="collapsible" class="lbl-toggle button">Instruction</label>
+      <div class="collapsible-content">
+        <div class="content-inner">
+          <span></span>
+          <p>Turn on developer mode:</p>
+          <p>1. Press the Home button on your TV’s remote.</p>
+          <p>2. Select Apps and click it.</p>
+          <img src="assets/apps.png" />
+          <p>3. Now press the Number button on your remote and type ‘12345‘ using the on-screen number.</p>
+          <img src="assets/12345.png" />
+          <p>
+            4. You’ll then see the Developer mode pop-up. Highlight the On button and select it. Also input to
+            "Host PC IP" your IP: <b id="my-ip"></b> (you should to be in the same network with TV)
+          </p>
+          <img src="assets/devmode.png" />
+          <p>
+            5. Now select the OK option. The Developer mode will be enabled for the Apps section on your
+            Samsung TV. Press and hold power button until you see logo SmartTV.
+          </p>
+          <p>6. Wait 3-5 seconds after re-start of TV.</p>
+          <p>7. Next click to "Search TV" button below.</p>
+          <p>8. Please confirm on TV permissions to connect to your TV for the app.</p>
+          <img src="assets/allow-remover.png" />
+          <p>9. Choose app which you would like to remove from a list</p>
+          <p>10. Click to remove.</p>
+          <p>Congratulations!</p>
+        </div>
+      </div>
     </div>
 
-    <h2>Apps</h2>
-    <button id="get-apps" class="button is-warning">Get apps</button>
-    <div>
-      <span id="get-apps-status"></span>
+    <button id="search-tv" class="button is-primary">Search TV</button>
+
+    <br />
+    <br />
+    <span id="name"></span><br />
+    <span id="model"></span><br />
+
+    <div id="apps">
+      <br />
+      <div>
+        <span id="get-apps-status"></span>
+      </div>
+
+      <div class="select is-multiple">
+        <select id="options" size="10"></select>
+      </div>
+      <br />
+      <br />
+      <button id="remove-app" class="button">Choose an app</button>
+      <button id="get-apps" class="button is-warning">Refresh list</button>
+      <br />
+      <div>
+        <span id="remove-status"></span>
+      </div>
     </div>
 
-    <div>
-      <select id="options"></select>
-    </div>
+    <div id="donate">
+      <br />
+      <div>
+        Do you like the app?
+        <br />
+        <a
+          target="_blank"
+          href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WUAAG2HH58WE4"
+        >
+          <img class="donate-img" src="assets/paypal-donate.png" />
+        </a>
+        <a target="_blank" href="https://www.buymeacoffee.com/toxblh"
+          ><img class="donate-img" src="assets/bmac.webp" />
+        </a>
+        <a target="_blank" href="https://patreon.com/toxblh"
+          ><img class="donate-img" src="assets/become-a-patron.png"
+        /></a>
+      </div>
 
-    <div>
-      Selected: <span  id="selected">Nothing</span>
-    </div>
-
-    <button id="remove-app" class="button is-danger">Remove app</button>
-    <div>
-      <span id="remove-status"></span>
+      <br />
     </div>
   </body>
 </html>

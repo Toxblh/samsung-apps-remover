@@ -1,16 +1,72 @@
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   padding: 0;
   margin: 0;
 }
 
-
-video {
-  width: 100%;
-  height: auto;
-}
-
 body {
   text-align: center;
-  padding-top: 20px;
+  padding: 20px;
+}
+
+#options {
+  height: auto;
+  padding: 0;
+}
+
+#options > option {
+  padding: 0.5em 1em;
+}
+
+#apps {
+  display: none;
+}
+
+#donate {
+  display: none;
+}
+
+.donate-img {
+  height: 36px;
+}
+
+input[type='checkbox'] {
+  display: none;
+}
+.wrap-collabsible {
+  margin: 1.2rem 0;
+}
+.lbl-toggle::before {
+  content: ' ';
+  display: inline-block;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid currentColor;
+  vertical-align: middle;
+  margin-right: 0.7rem;
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-out;
+}
+.toggle:checked + .lbl-toggle::before {
+  transform: rotate(90deg) translateX(-3px);
+}
+.collapsible-content {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 0.25s ease-in-out;
+}
+.toggle:checked + .lbl-toggle + .collapsible-content {
+  max-height: 3000px;
+}
+.toggle:checked + .lbl-toggle {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.collapsible-content .content-inner {
+  border: 1px solid #dbdbdb;
+  border-radius: 7px;
+  padding: 0.5rem 1rem;
+}
+.collapsible-content p {
+  margin-bottom: 0;
 }

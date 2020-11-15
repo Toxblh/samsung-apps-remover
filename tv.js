@@ -12,7 +12,7 @@ let selectedToDel = {}
 let control
 
 const configTV = {
-  nameApp: 'Samsung Apps Remover', // Default: NodeJS
+  nameApp: 'Samsung Apps Remover',
 }
 
 const getTVMacByIP = (ip) =>
@@ -53,62 +53,111 @@ const sdbFolder = process.platform == 'win32' ? 'win' : process.platform == 'lin
 const sdbApp = process.platform == 'win32' ? 'sdb.exe' : 'sdb'
 const sdbPath = `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
 
+const appsDiv = document.getElementById('apps')
+const donate = document.getElementById('donate')
 const select = document.getElementById('options')
-const selected = document.getElementById('selected')
 const searchBtn = document.getElementById('search-tv')
 const getAppsBtn = document.getElementById('get-apps')
 const getAppsStatus = document.getElementById('get-apps-status')
 const removeAppBtn = document.getElementById('remove-app')
 const removeStatus = document.getElementById('remove-status')
 
+getAppsBtn.onclick = getApps
+removeAppBtn.onclick = removeApp
+searchBtn.onclick = searchTV
+
+select.addEventListener('change', (e) => {
+  selectedToDel = apps.filter((app) => app.appId === e.target.value)[0]
+  removeAppBtn.innerHTML = `Remove &nbsp <b>${selectedToDel.name}</b>`
+  removeAppBtn.classList.add('is-danger')
+  console.log('selectedToDel', selectedToDel)
+})
+
 async function searchTV() {
+  searchBtn.classList.add('is-warning')
+  searchBtn.classList.add('is-loading')
+  searchBtn.innerText = 'Searching'
+
   const autoSearch = new AutoSearch()
   const tvs = await autoSearch.search(1000)
   console.log(tvs)
 
   if (tvs.length !== 0) {
+    document.getElementById('name').innerHTML = `Model: ${tvs[0].name}`
+    document.getElementById('model').innerHTML = `Name: ${tvs[0].model}`
+
     configTV.ip = tvs[0].ip
     configTV.mac = await getTVMacByIP(tvs[0].ip)
 
-    document.getElementById('name').innerHTML = tvs[0].name
-    document.getElementById('model').innerHTML = tvs[0].model
-    document.getElementById('ip').innerHTML = configTV.ip
-    document.getElementById('mac').innerHTML = configTV.mac
-
-    console.log(configTV)
     control = new Samsung(configTV)
+
+    await getToken()
+
+    getApps()
   }
 
-  searchBtn.classList.remove('is-danger')
+  searchBtn.classList.remove('is-warning')
+  searchBtn.classList.remove('is-loading')
   searchBtn.innerText = 'Search TV'
 }
 
-select.addEventListener('change', (e) => {
-  selectedToDel = apps.filter((app) => app.appId === e.target.value)[0]
-  selected.innerHTML = `<b>${selectedToDel.name}</b> [${selectedToDel.appId}]`
-  console.log('selectedToDel', selectedToDel)
-})
-
-searchBtn.onclick = () => {
-  searchTV()
-  searchBtn.classList.add('is-danger')
-  searchBtn.innerText = 'Searching'
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-getAppsBtn.onclick = async () => {
-  getAppsStatus.innerText = 'Please look to TV and confirm remote control for get list of applications'
+async function removeApp() {
+  try {
+    if (selectedToDel.name === undefined) {
+      removeStatus.innerHTML = `Nothing to delete`
+      return
+    }
+
+    removeAppBtn.classList.add('is-loading')
+
+    await connectToTV()
+    await delay(1000)
+    // await uninstallApp(selectedToDel.appId)
+    getApps()
+
+    removeStatus.innerHTML = ''
+
+    selectedToDel = {}
+
+    removeAppBtn.classList.remove('is-loading')
+    removeAppBtn.classList.remove('is-danger')
+    removeAppBtn.classList.add('is-success')
+    removeAppBtn.innerHTML =
+      '<span class="icon is-small"><i class="fas fa-check"></i></span>&nbsp&nbsp&nbspRemoved!'
+
+    await delay(500)
+
+    removeAppBtn.classList.remove('is-danger')
+    removeAppBtn.classList.remove('is-success')
+    removeAppBtn.innerHTML = 'Choose an app'
+
+
+    donate.style.display = "block";
+  } catch (err) {
+    console.log('Error: ', err)
+
+    removeStatus.innerHTML = `Error! Please check you turn on developer mode and restart TV (Hold power button until startup logo) and try again`
+  }
+}
+
+async function getToken() {
+  searchBtn.classList.remove('is-loading')
+  searchBtn.innerText = 'Please look at the TV and confirm your request.'
   await control.isAvailable()
-  let token = await control.getTokenPromise()
-  console.log('$$ token:', token)
+  await control.getTokenPromise()
+}
 
-  getAppsStatus.innerText = 'Token received'
-
+async function getApps() {
   const res = await control.getAppsFromTVPromise()
   apps = res.data.data
 
-  console.log('# Response getAppsFromTV', apps)
+  getAppsStatus.innerText = 'Select the application you want to delete:'
 
-  getAppsStatus.innerText = 'Choose to which application will delete'
+  removeOptions(select)
 
   apps.forEach((app) => {
     console.log(app)
@@ -117,19 +166,8 @@ getAppsBtn.onclick = async () => {
     option.value = app.appId
     select.appendChild(option)
   })
-}
 
-removeAppBtn.onclick = async () => {
-  try {
-    removeStatus.innerHTML = `Will remove app ${selectedToDel.name}`
-
-    await connectToTV()
-    await uninstallApp(selectedToDel.appId)
-
-    removeStatus.innerHTML = `${selectedToDel.name} Removed!`
-  } catch (err) {
-    console.log('Error: ', err)
-  }
+  appsDiv.style.display = "block";
 }
 
 function execAsync(cmd, outCheck) {
@@ -159,4 +197,12 @@ function connectToTV() {
 
 function disconnectTarget() {
   return execAsync(`${sdbPath} disconnect ${configTV.ip}:26101`)
+}
+
+function removeOptions(selectElement) {
+  var i,
+    L = selectElement.options.length - 1
+  for (i = L; i >= 0; i--) {
+    selectElement.remove(i)
+  }
 }
