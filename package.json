@@ -17,6 +17,11 @@
         "AppImage"
       ],
       "category": "Utility"
+    },
+    "win": {
+      "target": [
+        "portable"
+      ]
     }
   },
   "scripts": {
