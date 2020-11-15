@@ -1,12 +1,16 @@
-const { desktopCapturer, remote } = require('electron')
-const { Samsung, KEYS, APPS, AutoSearch } = require('samsung-tv-control')
+const { Samsung, AutoSearch } = require('samsung-tv-control')
+const { sep } = require('path');
+const path = require('path');
 const { networkInterfaces } = require('os')
 const { getMac } = require('macfromip')
 
 const nets = networkInterfaces()
-const results = [] // or just '{}', an empty object
+const results = []
+let apps
+let selectedToDel = {}
 
 let control
+
 const configTV = {
   // debug: true, // Default: false
   nameApp: 'Samsung Apps Remover', // Default: NodeJS
@@ -39,8 +43,16 @@ function getMyLocalIp() {
 
 getMyLocalIp()
 
-// Start AutoSearch
-async function main() {
+
+const select = document.getElementById('options')
+const selected = document.getElementById('selected')
+const searchBtn = document.getElementById('search-tv')
+const getAppsBtn = document.getElementById('get-apps')
+const getAppsStatus = document.getElementById('get-apps-status')
+const removeAppBtn = document.getElementById('remove-app')
+const removeStatus = document.getElementById('remove-status')
+
+async function searchTV() {
   const autoSearch = new AutoSearch()
   const tvs = await autoSearch.search(1000)
   console.log(tvs)
@@ -63,41 +75,51 @@ async function main() {
   searchBtn.innerText = 'Search TV'
 }
 
-// Buttons
-const select = document.getElementById('options')
-const selected = document.getElementById('selected')
-
 select.addEventListener('change', (e) => {
-  selected.innerHTML = e.target.value
+  selectedToDel = apps.filter(app => app.appId === e.target.value)[0]
+  selected.innerHTML = `<b>${selectedToDel.name}</b> [${selectedToDel.appId}]`
+  console.log('selectedToDel', selectedToDel)
 })
 
-const searchBtn = document.getElementById('search-tv')
-searchBtn.onclick = (e) => {
-  main()
+searchBtn.onclick = () => {
+  searchTV()
   searchBtn.classList.add('is-danger')
   searchBtn.innerText = 'Searching'
 }
 
-const getAppsBtn = document.getElementById('get-apps')
 
-getAppsBtn.onclick = async (e) => {
+getAppsBtn.onclick = async () => {
+  getAppsStatus.innerText = 'Please look to TV and confirm remote control for get list of applications'
   await control.isAvailable()
   let token = await control.getTokenPromise()
   console.log('$$ token:', token)
 
+  getAppsStatus.innerText = 'Token received'
 
-  const apps = await control.getAppsFromTVPromise()
+  const res = await control.getAppsFromTVPromise()
+  apps = res.data.data
 
   console.log('# Response getAppsFromTV', apps)
 
-  apps.data.data.forEach((app) => {
+
+  getAppsStatus.innerText = 'Choose to which application will delete'
+
+  apps.forEach((app) => {
     console.log(app)
     var option = document.createElement('option')
     option.text = app.name
     option.value = app.appId
     select.appendChild(option)
   })
+}
 
+removeAppBtn.onclick = () => {
+  //is-warning
+  removeStatus.innerHTML = `Will remove app ${selectedToDel.name}`
+  const extensionRootPath = path.resolve(__dirname, '..');
+  const sdbFolder = (process.platform == 'win32') ? 'win' : (process.platform == 'linux') ? 'linux' : 'mac';
+  const sdbToolname = (process.platform == 'win32') ? 'sdb.exe' : 'sdb';
+  const sdbExec = `${extensionRootPath}/sdb/${sdbFolder}/${sdbToolname}`.split('/').join(sep);
 
-  await control.openApp(APPS.Spotify)
+  console.log(sdbExec);
 }

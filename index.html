@@ -2,39 +2,52 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Hello World!</title>
+    <title>Samsung apps remover</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css" />
     <link rel="stylesheet" href="index.css" />
     <script defer src="render.js"></script>
   </head>
   <body class="content">
-    <h1>Samsung remover apps</h1>
+    <h1>Samsung apps remover</h1>
 
     <h2>Instruction</h2>
-    <p>bla bla bla</p>
+    <pre>
+      bla bla bla
+      Turn on your TV wait 2-3 seconds and start to search,
+      if nothing found - try again.
+
+    </pre>
 
     <h2>My IP: <span id="my-ip"></span></h2>
 
     <h2>TV <button id="search-tv" class="button is-primary">Search TV</button></h2>
 
     <div>
-      <p>
+      <pre>
         <span>Model: </span><span id="model"></span><br />
         <span>Name: </span><span id="name"></span><br />
         <span>IP: </span><span id="ip"></span><br />
         <span>Mac: </span><span id="mac"></span>
-      </p>
+      </pre>
     </div>
 
     <h2>Apps</h2>
     <button id="get-apps" class="button is-warning">Get apps</button>
+    <div>
+      <span id="get-apps-status"></span>
+    </div>
 
     <div>
       <select id="options"></select>
     </div>
 
-    <div id="selected"></div>
+    <div>
+      Selected: <span  id="selected">Nothing</span>
+    </div>
 
-    <button id="remove-app" class="button is-warning">Remove app</button>
+    <button id="remove-app" class="button is-danger">Remove app</button>
+    <div>
+      <span id="remove-status"></span>
+    </div>
   </body>
 </html>
