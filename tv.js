@@ -3,6 +3,7 @@ const { sep } = require('path')
 const { exec } = require('child_process')
 const { networkInterfaces } = require('os')
 const { getMac } = require('macfromip')
+const fs = require('fs')
 
 const nets = networkInterfaces()
 const results = []
@@ -14,39 +15,6 @@ let control
 const configTV = {
   nameApp: 'Samsung Apps Remover',
 }
-
-const getTVMacByIP = (ip) =>
-  new Promise((resolve, reject) => {
-    getMac(ip, (err, data) => {
-      if (err) {
-        reject(err)
-        return
-      }
-      // fix the mac address so that every number consists of 2 bytes
-      const mac = data
-        .trim()
-        .split(':')
-        .map((n) => (n.length < 2 ? `0${n}` : `${n}`))
-        .join('')
-        .toUpperCase()
-      resolve(mac)
-    })
-  })
-
-function getMyLocalIp() {
-  for (const name of Object.keys(nets)) {
-    for (const net of nets[name]) {
-      // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
-      if (net.family === 'IPv4' && !net.internal) {
-        results.push(net.address)
-      }
-    }
-  }
-
-  document.getElementById('my-ip').innerHTML = results.join(',')
-}
-
-getMyLocalIp()
 
 const appFolder = __dirname
 const sdbFolder = process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
@@ -61,6 +29,10 @@ const getAppsBtn = document.getElementById('get-apps')
 const getAppsStatus = document.getElementById('get-apps-status')
 const removeAppBtn = document.getElementById('remove-app')
 const removeStatus = document.getElementById('remove-status')
+let counterSearches = 0
+
+getMyLocalIp()
+checkRights()
 
 getAppsBtn.onclick = getApps
 removeAppBtn.onclick = removeApp
@@ -94,11 +66,21 @@ async function searchTV() {
     await getToken()
 
     getApps()
-  }
 
-  searchBtn.classList.remove('is-warning')
-  searchBtn.classList.remove('is-loading')
-  searchBtn.innerText = 'Search TV'
+    searchBtn.classList.remove('is-warning')
+    searchBtn.classList.remove('is-loading')
+    searchBtn.innerText = 'Search TV'
+  } else {
+    counterSearches++
+    if (counterSearches < 10) {
+      setTimeout(searchTV, 2000)
+    } else {
+      searchBtn.classList.remove('is-warning')
+      searchBtn.classList.remove('is-loading')
+      searchBtn.innerText = 'Not found. Try again?'
+      counterSearches = 0
+    }
+  }
 }
 
 function delay(ms) {
@@ -115,8 +97,8 @@ async function removeApp() {
     removeAppBtn.classList.add('is-loading')
 
     await connectToTV()
-    await delay(1000)
-    // await uninstallApp(selectedToDel.appId)
+    // await delay(1000)
+    await uninstallApp(selectedToDel.appId)
     getApps()
 
     removeStatus.innerHTML = ''
@@ -135,12 +117,11 @@ async function removeApp() {
     removeAppBtn.classList.remove('is-success')
     removeAppBtn.innerHTML = 'Choose an app'
 
-
-    donate.style.display = "block";
+    // donate.style.display = 'block'
   } catch (err) {
     console.log('Error: ', err)
 
-    removeStatus.innerHTML = `Error! Please check you turn on developer mode and restart TV (Hold power button until startup logo) and try again`
+    removeStatus.innerHTML = `Error! Please check you turn on developer mode and restart TV (Hold power button until startup logo) and try again. Msg ${err}`
   }
 }
 
@@ -167,7 +148,7 @@ async function getApps() {
     select.appendChild(option)
   })
 
-  appsDiv.style.display = "block";
+  appsDiv.style.display = 'block'
 }
 
 function execAsync(cmd, outCheck) {
@@ -205,4 +186,48 @@ function removeOptions(selectElement) {
   for (i = L; i >= 0; i--) {
     selectElement.remove(i)
   }
+}
+
+function checkRights() {
+  if (process.platform != 'win32') {
+    if (process.platform == 'linux' || process.platform == 'darwin') {
+      try {
+        fs.accessSync(sdbPath, '0777')
+      } catch (err) {
+        fs.chmodSync(sdbPath, '0777')
+      }
+    }
+  }
+}
+
+function getTVMacByIP(ip) {
+  return new Promise((resolve, reject) => {
+    getMac(ip, (err, data) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      // fix the mac address so that every number consists of 2 bytes
+      const mac = data
+        .trim()
+        .split(':')
+        .map((n) => (n.length < 2 ? `0${n}` : `${n}`))
+        .join('')
+        .toUpperCase()
+      resolve(mac)
+    })
+  })
+}
+
+function getMyLocalIp() {
+  for (const name of Object.keys(nets)) {
+    for (const net of nets[name]) {
+      // skip over non-ipv4 and internal (i.e. 127.0.0.1) addresses
+      if (net.family === 'IPv4' && !net.internal) {
+        results.push(net.address)
+      }
+    }
+  }
+
+  document.getElementById('my-ip').innerHTML = results.join(',')
 }

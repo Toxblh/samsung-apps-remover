@@ -70,3 +70,15 @@ input[type='checkbox'] {
 .collapsible-content p {
   margin-bottom: 0;
 }
+
+.menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 14px;
+  color: #949494;
+}
+
+.menu .button {
+  color: #505050;
+}
