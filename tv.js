@@ -18,7 +18,7 @@ const configTV = {
 const appFolder = __dirname
 const sdbFolder = process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
 const sdbApp = process.platform == 'win32' ? 'sdb.exe' : 'sdb'
-const sdbPath = `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
+const sdbPath = process.platform == 'darwin' ? `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.replace(/(\s+)/g, '\\$1').split('/').join(sep) : `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
 
 const appsDiv = document.getElementById('apps')
 const donate = document.getElementById('donate')
