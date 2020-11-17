@@ -3,7 +3,6 @@ const { sep } = require('path')
 const { exec } = require('child_process')
 const { networkInterfaces } = require('os')
 const { getMac } = require('macfromip')
-const fs = require('fs')
 
 const nets = networkInterfaces()
 const results = []
@@ -32,7 +31,6 @@ const removeStatus = document.getElementById('remove-status')
 let counterSearches = 0
 
 getMyLocalIp()
-checkRights()
 
 getAppsBtn.onclick = getApps
 removeAppBtn.onclick = removeApp
@@ -117,7 +115,7 @@ async function removeApp() {
     removeAppBtn.classList.remove('is-success')
     removeAppBtn.innerHTML = 'Choose an app'
 
-    // donate.style.display = 'block'
+    donate.style.display = 'block'
   } catch (err) {
     console.log('Error: ', err)
 
@@ -185,18 +183,6 @@ function removeOptions(selectElement) {
     L = selectElement.options.length - 1
   for (i = L; i >= 0; i--) {
     selectElement.remove(i)
-  }
-}
-
-function checkRights() {
-  if (process.platform != 'win32') {
-    if (process.platform == 'linux' || process.platform == 'darwin') {
-      try {
-        fs.accessSync(sdbPath, '0777')
-      } catch (err) {
-        fs.chmodSync(sdbPath, '0777')
-      }
-    }
   }
 }
 

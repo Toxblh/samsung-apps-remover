@@ -4,8 +4,22 @@
   "description": "Samsung apps remover application",
   "main": "main.js",
   "build": {
+    "asar": false,
     "appId": "com.toxblh.samsung-apps-remover",
     "productName": "Samsung Apps Remover",
+    "files": [
+      "build/**/*",
+      "sdb/**/*",
+      "assets/**/*",
+      "bulma.css",
+      "fontawesome.js",
+      "index.css",
+      "index.html",
+      "main.js",
+      "tv.js",
+      "node_modules/**/*",
+      "package.json"
+    ],
     "mac": {
       "category": "public.app-category.entertainment"
     },
@@ -26,10 +40,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "install-app-deps",
+    "start": "electron main.js",
     "build": "electron-builder",
     "release": "electron-builder --publish always",
     "patch": "npm version patch && git push --follow-tags",
@@ -48,11 +60,6 @@
   },
   "homepage": "https://github.com/Toxblh/samsung-apps-remover#readme",
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.54",
-    "@electron-forge/maker-deb": "^6.0.0-beta.54",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
-    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "electron": "^10.1.5",
     "electron-builder": "^22.9.1"
   },
@@ -61,32 +68,5 @@
     "macfromip": "^1.1.1",
     "open": "^7.3.0",
     "samsung-tv-control": "^1.11.1"
-  },
-  "config": {
-    "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "samsung_apps_remover"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin"
-          ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
-        }
-      ]
-    }
   }
 }
