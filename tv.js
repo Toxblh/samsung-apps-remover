@@ -19,7 +19,7 @@ const appFolder = __dirname
 const sdbFolder =
   process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
 const sdbApp = process.platform == 'win32' ? 'sdb.exe' : 'sdb'
-const sdbPath = process.platform == 'darwin' ? `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.replace(/(\s+)/g, '\\$1').split('/').join(sep) : `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
+const sdbPath = `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.replace(/(\s+)/g, '\\$1').split('/').join(sep)
 
 const appsDiv = document.getElementById('apps')
 const donate = document.getElementById('donate')
@@ -46,7 +46,7 @@ searchIP.addEventListener("keyup", function(event) {
     event.preventDefault();
     getUserIP()
   }
-}); 
+});
 
 select.addEventListener('change', (e) => {
   selectedToDel = apps.filter((app) => app.appId === e.target.value)[0]
