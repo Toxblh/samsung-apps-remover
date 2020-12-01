@@ -71,6 +71,45 @@ input[type='checkbox'] {
   margin-bottom: 0;
 }
 
+#connect-ip {
+  display: none;
+}
+
+.lbl-toggle-ip::before {
+  content: ' ';
+  display: inline-block;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 5px solid currentColor;
+  vertical-align: middle;
+  margin-right: 0.7rem;
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-out;
+}
+.toggle-ip:checked + .lbl-toggle-ip::before {
+  transform: rotate(90deg) translateX(-3px);
+}
+.collapsible-content-ip {
+  max-height: 0px;
+  overflow: hidden;
+  transition: max-height 0.25s ease-in-out;
+}
+.toggle-ip:checked + .lbl-toggle-ip + .collapsible-content-ip {
+  max-height: 3000px;
+}
+.toggle-ip:checked + .lbl-toggle-ip {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.collapsible-content-ip .content-inner {
+  border: 1px solid #dbdbdb;
+  border-radius: 7px;
+  padding: 0.5rem 1rem;
+}
+.collapsible-content-ip p {
+  margin-bottom: 0;
+}
+
 .menu {
   position: absolute;
   top: 10px;

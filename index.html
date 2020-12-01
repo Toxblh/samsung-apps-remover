@@ -14,21 +14,25 @@
       <label for="collapsible" class="lbl-toggle button">Instruction</label>
       <div class="collapsible-content">
         <div class="content-inner">
-          <span></span>
           <p>Turn on developer mode:</p>
           <p>1. Press the Home button on your TV’s remote.</p>
           <p>2. Select Apps and click it.</p>
           <img src="assets/apps.png" />
-          <p>3. Now press the Number button on your remote and type ‘12345‘ using the on-screen number.</p>
+          <p>
+            3. Now press the Number button on your remote and type ‘12345‘ using the
+            on-screen number.
+          </p>
           <img src="assets/12345.png" />
           <p>
-            4. You’ll then see the Developer mode pop-up. Highlight the On button and select it. Also input to
-            "Host PC IP" your IP: <b id="my-ip"></b> (you should to be in the same network with TV)
+            4. You’ll then see the Developer mode pop-up. Highlight the On button and
+            select it. Also input to "Host PC IP" your IP: <b id="my-ip"></b> (you should
+            to be in the same network with TV)
           </p>
           <img src="assets/devmode.png" />
           <p>
-            5. Now select the OK option. The Developer mode will be enabled for the Apps section on your
-            Samsung TV. Press and hold power button until you see logo SmartTV.
+            5. Now select the OK option. The Developer mode will be enabled for the Apps
+            section on your Samsung TV. Press and hold power button until you see logo
+            SmartTV.
           </p>
           <p>6. Wait 3-5 seconds after re-start of TV.</p>
           <p>7. Next click to "Search TV" button below.</p>
@@ -42,6 +46,41 @@
     </div>
 
     <button id="search-tv" class="button is-primary">Search TV</button>
+
+    <div id="connect-ip">
+      <div class="wrap-collabsible">
+        <input id="collapsible-ip" class="toggle-ip" type="checkbox" />
+        <label for="collapsible-ip" class="lbl-toggle-ip button">Or how to get IP</label>
+        <div class="collapsible-content-ip">
+          <div class="content-inner">
+            <p>1. Press the Home button on your TV’s remote.</p>
+            <p>2. Select <b>Settings</b> and click it.</p>
+            <p>3. Now to open <b>General</b></p>
+            <p>4. Open <b>Network</b></p>
+            <p>5. Inside Network, open <b>Network status</b></p>
+            <p>6. Wait until will show buttons and choose <b>IP settings</b></p>
+            <p>
+              7. In the window which should appear, under IP setting will be <b>gray line IP
+                address</b>, what is IP of your TV which need to input and click connect
+            </p>
+            <p>8. Please confirm on TV permissions to connect to your TV for the app.</p>
+            <img src="assets/allow-remover.png" />
+            <p>9. Choose app which you would like to remove from a list</p>
+            <p>10. Click to remove.</p>
+            <p>Congratulations!</p>
+          </div>
+        </div>
+      </div>
+
+      <input
+        style="width: 150px"
+        class="input"
+        id="search-ip"
+        placeholder="192.168.100.100"
+        pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
+      />
+      <button id="search-tv-ip" class="button is-primary">Connect to IP</button>
+    </div>
 
     <br />
     <br />
@@ -91,7 +130,12 @@
 
     <div class="menu">
       <a class="button" target="_blank" href="https://github.com/Toxblh">Author</a>
-      <a class="button" target="_blank" href="mailto:toxblh@gmail.com?subject=SAR-app&body=%0D%0A%0D%0A---%0D%0ASamsung%20apps%20remover">Help</a>
+      <a
+        class="button"
+        target="_blank"
+        href="mailto:toxblh@gmail.com?subject=SAR-app&body=%0D%0A%0D%0A---%0D%0ASamsung%20apps%20remover"
+        >Help</a
+      >
     </div>
   </body>
 </html>

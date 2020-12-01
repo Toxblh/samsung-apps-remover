@@ -7,14 +7,14 @@ function createWindow() {
     height: 850,
     webPreferences: {
       nodeIntegration: true,
-      devTools: false
+      // devTools: false
     },
     icon: `${__dirname}/build/icon.png`,
   })
 
   win.removeMenu()
   win.loadFile('index.html')
-  // win.webContents.openDevTools()
+  win.webContents.openDevTools()
   win.webContents.on('new-window', function (event, url) {
     event.preventDefault()
     open(url)

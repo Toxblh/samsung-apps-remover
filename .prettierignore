@@ -1,0 +1,13 @@
+/build
+/node_modules
+/log/
+/designs/
+/public/assets/
+/package-lock.json
+/yarn.lock
+/package.json
+/.idea/
+/coverage/
+/.history/
+/styleguide/
+/flow-typed/

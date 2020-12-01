@@ -16,7 +16,8 @@ const configTV = {
 }
 
 const appFolder = __dirname
-const sdbFolder = process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
+const sdbFolder =
+  process.platform == 'win32' ? 'win' : process.platform == 'linux' ? 'linux' : 'mac'
 const sdbApp = process.platform == 'win32' ? 'sdb.exe' : 'sdb'
 const sdbPath = `${appFolder}/sdb/${sdbFolder}/${sdbApp}`.split('/').join(sep)
 
@@ -28,6 +29,9 @@ const getAppsBtn = document.getElementById('get-apps')
 const getAppsStatus = document.getElementById('get-apps-status')
 const removeAppBtn = document.getElementById('remove-app')
 const removeStatus = document.getElementById('remove-status')
+const searchIPBtn = document.getElementById('search-tv-ip')
+const searchIP = document.getElementById('search-ip')
+const connectIP = document.getElementById('connect-ip')
 let counterSearches = 0
 
 getMyLocalIp()
@@ -35,6 +39,14 @@ getMyLocalIp()
 getAppsBtn.onclick = getApps
 removeAppBtn.onclick = removeApp
 searchBtn.onclick = searchTV
+searchIPBtn.onclick = getUserIP
+
+searchIP.addEventListener("keyup", function(event) {
+  if (event.keyCode === 13) {
+    event.preventDefault();
+    getUserIP()
+  }
+}); 
 
 select.addEventListener('change', (e) => {
   selectedToDel = apps.filter((app) => app.appId === e.target.value)[0]
@@ -50,34 +62,101 @@ async function searchTV() {
 
   const autoSearch = new AutoSearch()
   const tvs = await autoSearch.search(1000)
-  console.log(tvs)
 
   if (tvs.length !== 0) {
     document.getElementById('name').innerHTML = `Model: ${tvs[0].name}`
     document.getElementById('model').innerHTML = `Name: ${tvs[0].model}`
 
     configTV.ip = tvs[0].ip
-    configTV.mac = await getTVMacByIP(tvs[0].ip)
+
+    try {
+      configTV.mac = await getTVMacByIP(tvs[0].ip)
+    } catch (err) {
+      searchBtn.classList.remove('is-warning')
+      searchBtn.classList.remove('is-loading')
+      searchBtn.innerText = 'Not found. Did you turn on TV? Try again.'
+    }
 
     control = new Samsung(configTV)
 
-    await getToken()
+    let isOn = await control.isAvailable()
 
-    getApps()
+    if (isOn) {
+      await getToken(searchBtn)
 
-    searchBtn.classList.remove('is-warning')
-    searchBtn.classList.remove('is-loading')
-    searchBtn.innerText = 'Search TV'
+      getApps()
+
+      searchBtn.classList.remove('is-warning')
+      searchBtn.classList.remove('is-loading')
+      searchBtn.innerText = 'Search TV'
+    } else {
+      searchBtn.classList.remove('is-warning')
+      searchBtn.classList.remove('is-loading')
+      searchBtn.innerText = 'Not found. Did you turn on TV? Try again.'
+    }
   } else {
     counterSearches++
-    if (counterSearches < 10) {
+    if (counterSearches < 7) {
       setTimeout(searchTV, 2000)
     } else {
       searchBtn.classList.remove('is-warning')
       searchBtn.classList.remove('is-loading')
-      searchBtn.innerText = 'Not found. Try again?'
+      searchBtn.innerText = 'Not found. Did you turn on TV? Try again.'
+
+      connectIP.style.display = 'block'
+
       counterSearches = 0
     }
+  }
+}
+
+function validateIP(value) {
+  let regex = /^((25[0-5]|(2[0-4]|1[0-9]|[1-9]|)[0-9])(\.(?!$)|$)){4}$/
+  return regex.test(value)
+}
+
+async function getUserIP() {
+  let userIP = searchIP.value
+
+  if (validateIP(userIP)) {
+    searchIP.classList.remove('is-danger')
+    searchIP.classList.remove('is-warning')
+
+    searchIPBtn.classList.add('is-warning')
+    searchIPBtn.classList.add('is-loading')
+    searchIPBtn.innerText = 'Try to connect...'
+
+    configTV.ip = userIP
+    try {
+      configTV.mac = await getTVMacByIP(userIP)
+
+      control = new Samsung(configTV)
+
+      let isOn = await control.isAvailable()
+
+      if (isOn) {
+        await getToken(searchIPBtn)
+
+        getApps()
+
+        searchIPBtn.classList.remove('is-warning')
+        searchIPBtn.classList.remove('is-loading')
+        searchIPBtn.innerText = 'Connect to IP'
+      } else {
+        searchBtn.classList.remove('is-warning')
+        searchBtn.classList.remove('is-loading')
+        searchBtn.innerText =
+          "Can't to connect. Please check IP and TV is ON. Click to try again"
+      }
+    } catch (err) {
+      searchIP.classList.add('is-warning')
+      searchIPBtn.classList.remove('is-warning')
+      searchIPBtn.classList.remove('is-loading')
+      searchIPBtn.innerText =
+        "Can't to connect. Please check IP and TV is ON.\nClick to try again"
+    }
+  } else {
+    searchIP.classList.add('is-danger')
   }
 }
 
@@ -123,10 +202,9 @@ async function removeApp() {
   }
 }
 
-async function getToken() {
-  searchBtn.classList.remove('is-loading')
-  searchBtn.innerText = 'Please look at the TV and confirm your request.'
-  await control.isAvailable()
+async function getToken(button) {
+  button.classList.remove('is-loading')
+  button.innerText = 'Please look at the TV and confirm your request.'
   await control.getTokenPromise()
 }
 
