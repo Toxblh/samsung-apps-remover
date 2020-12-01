@@ -14,7 +14,7 @@ function createWindow() {
 
   win.removeMenu()
   win.loadFile('index.html')
-  win.webContents.openDevTools()
+  // win.webContents.openDevTools()
   win.webContents.on('new-window', function (event, url) {
     event.preventDefault()
     open(url)
